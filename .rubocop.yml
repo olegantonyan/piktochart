@@ -1,12 +1,16 @@
 AllCops:
   TargetRubyVersion: 3.4
   NewCops: enable
+  SuggestExtensions: false
 
 Style/StringLiterals:
-  EnforcedStyle: double_quotes
+  EnforcedStyle: double_quotes # defaults
 
 Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
+  EnforcedStyle: double_quotes # defaults
 
 Style/Documentation:
   Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false # not needed anymore in the new Ruby versions
