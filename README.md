@@ -79,5 +79,7 @@ Total price: $29.90
 
 1. The price is always in USD cents as an Integer. Price formatting assumes USD currency by default but allows to override the formatter. In case of multiple currencies extract Price class that incapsulates the currency and the value.
 2. A default offer "buy one red widget, get the second half price" assumed to be applied only once no matter how many even number red widgets there are.
-3. The gem is a standard way of writing Ruby libraries and executables, it's complete and "production-ready", with tests, CI setup, README, etc.
-4. Use latest Ruby version.
+3. Delivery price is calculated after applying all offers.
+4. Total price can be 0 if delivery and offer rules allow this (negative will be rounded up to 0 as well).
+5. The gem is a standard way of writing Ruby libraries and executables, it's complete and "production-ready", with tests, CI setup, README, etc.
+6. Use latest Ruby version.
