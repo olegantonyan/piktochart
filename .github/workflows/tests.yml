@@ -9,5 +9,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
-      - run: bundle install
+      - run: bin/setup
       - run: bundle exec rake

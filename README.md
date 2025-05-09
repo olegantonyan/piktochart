@@ -2,44 +2,80 @@
 
 [![CI Ruby](https://github.com/olegantonyan/piktochart/actions/workflows/tests.yml/badge.svg)](https://github.com/olegantonyan/piktochart/actions/workflows/tests.yml)
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/piktochart`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-## Installation
-
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
+Calculate the total products price with delivery and offers.
 
 ## Usage
 
-TODO: Write usage instructions here
+There are 2 ways to use this gem.
 
-## Development
+### 1. As a gem
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Add to your Gemfile:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+gem "piktochart", github: "olegantonyan/piktochart"
+```
 
-## Contributing
+Use `Piktochart::Basket` class to add products and calculate the total price:
+```ruby
+basket = ::Piktochart::Basket.new
+basket.add("G01")
+basket.total #=> 2990
+```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/piktochart. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/piktochart/blob/master/CODE_OF_CONDUCT.md).
+Configure the product catalog, delivery, offer rules if needed:
 
-## License
+```ruby
+# app/initializers/piktochart.rb
+::Piktochart.configure do |config|
+  config.catalog = ::Piktochart::Catalog.new([
+    ::Piktochart::Catalog::Product.new(code: "rpg", name: "Rocket launcher", price: 30_000),
+    ::Piktochart::Catalog::Product.new(code: "k7", name: "Killer7", price: 77_700),
+    ::Piktochart::Catalog::Product.new(code: "prl", name: "PRL 412", price: 0)
+  ])
+  config.delivery_rules = ::Piktochart::DeliveryRules.new([
+    ->(total_order_price) { total_order_price > 50_000 ? 0 : 146 } # free delivery for orders over 50k
+  ])
+  config.offer_rules = ::Piktochart::OfferRules.new([
+    ->(products) { products.count == 9 ? -100_500 : 0 }, # scammy offer - why not?
+    ->(products) { products.count == 3 ? 200 : 0 },
+    ->(products) { products.count { it.code == "rpg" } > 2 ? 1000 : 0 } # 1k off when buying 3+ rocket launchers
+  ])
+end
+```
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+If you don't override the global config, a default will be used.
 
-## Code of Conduct
+You can pass `catalog`, `delivery_rules`, `offer_rules` to `Piktochart::Basket` constructor to override the global config:
 
-Everyone interacting in the Piktochart project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/piktochart/blob/master/CODE_OF_CONDUCT.md).
+```ruby
+basket = ::Piktochart::Basket.new(catalog: ::Piktochart::Catalog.new(..., ...)
+```
+
+A delivery rule and/or an offer rule can be any object that respondents to `call`. For delivery rules it must accept a number - total price of all products. For offer rules it must accept an array of products.
+
+### 2. As a standalone executable
+
+Run `exe/piktochart` binary interactively:
+
+```shell
+$ exe/piktochart
+```
+
+Or non-interactively:
+```shell
+$ echo "G01" | exe/piktochart
+
+Products catalog:
+[R01] Red Widget - $32.95
+[G01] Green Widget - $24.95
+[B01] Blue Widget - $7.95
+Enter your product codes separated by whitespace
+Your basket: G01
+Total price: $29.90
+```
+
+## Assumptions
+
+1. The price is always in USD cents as an Integer. Price formatting assumes USD currency by default but allows to override the formatter. In case of multiple currencies extract Price class that incapsulates the currency and the value.
+2. A default offer "buy one red widget, get the second half price" assumed to be applied only once no matter how many even number red widgets there are.
