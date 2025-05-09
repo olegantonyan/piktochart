@@ -44,19 +44,19 @@ Configure the product catalog, delivery, offer rules if needed:
 end
 ```
 
-If you don't override the global config, a default will be used.
+If you don't override the global config, a default one will be used (see `lib/piktochart.rb`).
 
 You can pass `catalog`, `delivery_rules`, `offer_rules` to `Piktochart::Basket` constructor to override the global config:
 
 ```ruby
-basket = ::Piktochart::Basket.new(catalog: ::Piktochart::Catalog.new(..., ...)
+basket = ::Piktochart::Basket.new(catalog: ::Piktochart::Catalog.new(..., offer_rules: ...)
 ```
 
 A delivery rule and/or an offer rule can be any object that respondents to `call`. For delivery rules it must accept a number - total price of all products. For offer rules it must accept an array of products.
 
 ### 2. As a standalone executable
 
-Run `exe/piktochart` binary interactively:
+Run `exe/piktochart` binary interactively and enter the product codes when prompted:
 
 ```shell
 $ exe/piktochart
@@ -79,3 +79,5 @@ Total price: $29.90
 
 1. The price is always in USD cents as an Integer. Price formatting assumes USD currency by default but allows to override the formatter. In case of multiple currencies extract Price class that incapsulates the currency and the value.
 2. A default offer "buy one red widget, get the second half price" assumed to be applied only once no matter how many even number red widgets there are.
+3. The gem is a standard way of writing Ruby libraries and executables, it's complete and "production-ready", with tests, CI setup, README, etc.
+4. Use latest Ruby version.
