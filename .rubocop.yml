@@ -10,7 +10,13 @@ Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes # defaults
 
 Style/Documentation:
-  Enabled: false
+  Enabled: false # not needed here
 
 Style/FrozenStringLiteralComment:
   Enabled: false # not needed anymore in the new Ruby versions
+
+Layout/FirstArrayElementIndentation:
+  Enabled: false # personal preference
+
+Style/RedundantConstantBase:
+  Enabled: false # in Rails autoloader sometimes shots in the foot - keep top-level ::Constant

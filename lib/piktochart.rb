@@ -9,8 +9,7 @@ module Piktochart
   class Configuration
     attr_accessor :catalog, :delivery_rules, :offer_rules
 
-    # rubocop: disable Metrics/MethodLength, Layout/FirstArrayElementIndentation
-    def initialize
+    def initialize # rubocop: disable Metrics/MethodLength
       @catalog = ::Piktochart::Catalog.new([
         ::Piktochart::Catalog::Product.new(code: "R01", name: "Red Widget", price: 3295),
         ::Piktochart::Catalog::Product.new(code: "G01", name: "Green Widget", price: 2495),
@@ -25,7 +24,6 @@ module Piktochart
         ::Piktochart::OfferRules::BuyOneRedWidgetGetSecondHalfPrice.new
       ])
     end
-    # rubocop: enable Metrics/MethodLength, Layout/FirstArrayElementIndentation
   end
 
   class << self

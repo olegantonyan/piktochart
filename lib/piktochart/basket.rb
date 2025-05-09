@@ -20,7 +20,7 @@ module Piktochart
       offers = offer_rules.call(products)
       subtotal_with_offers = subtotal - offers
       delivery = delivery_rules.call(subtotal_with_offers)
-      subtotal_with_offers + delivery
+      [subtotal_with_offers + delivery, 0].max
     end
   end
 end
