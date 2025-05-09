@@ -4,4 +4,23 @@ $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 require "piktochart"
 
-puts Piktochart.config.catalog
+price_formatter = ->(value) { format("$%.2f", value / 100.0) }
+
+puts "Products catalog:"
+::Piktochart.config.catalog.each do
+  puts it.to_s(price_formatter:)
+end
+
+loop do
+  puts "Enter your product codes separated by whitespace"
+
+  codes = ::ARGF.gets.squeeze(" ").split
+  next if codes.empty?
+
+  basket = ::Piktochart::Basket.new
+  codes.each { basket.add(it) }
+
+  puts "Your basket: #{basket.products.map(&:code).join(" ")}"
+  puts "Total price: #{price_formatter.call(basket.total)}"
+  break
+end

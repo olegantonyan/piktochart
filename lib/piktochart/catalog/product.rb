@@ -10,8 +10,8 @@ module Piktochart
         freeze
       end
 
-      def to_s
-        "#{name} (#{code}) - #{format("$%.2f", price / 100.0)}"
+      def to_s(price_formatter: ->(value) { format("$%.2f", value / 100.0) })
+        "[#{code}] #{name} - #{price_formatter.call(price)}"
       end
       alias inspect to_s
     end

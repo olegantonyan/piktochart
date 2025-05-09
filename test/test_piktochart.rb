@@ -1,3 +1,5 @@
+require "English"
+
 require "test_helper"
 
 class TestPiktochart < Minitest::Test
@@ -57,5 +59,21 @@ class TestPiktochart < Minitest::Test
                  build_basket("k7", "rpg", "prl", "k7", "rpg", "prl", "k7", "rpg", "prl", delivery_rules:,
                                                                                           offer_rules:, catalog:).total
     assert_equal 0, build_basket("prl", "prl", "prl", delivery_rules:, offer_rules:, catalog:).total
+  end
+
+  def test_cli # rubocop: disable Metrics/MethodLength
+    result = `echo "R01 G01" | exe/piktochart`
+
+    expected = <<~STR
+      Products catalog:
+      [R01] Red Widget - $32.95
+      [G01] Green Widget - $24.95
+      [B01] Blue Widget - $7.95
+      Enter your product codes separated by whitespace
+      Your basket: R01 G01
+      Total price: $60.85
+    STR
+    assert $CHILD_STATUS.success?
+    assert_equal expected, result
   end
 end
